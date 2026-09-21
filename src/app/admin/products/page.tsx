@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/types";
 import { formatMoney } from "@/lib/money";
+import { apiFetch } from "@/lib/api-client";
 
 const emptyForm = {
   sku: "",
@@ -25,7 +26,7 @@ export default function AdminProductsPage() {
 
   async function load() {
     setLoading(true);
-    const res = await fetch("/api/products");
+    const res = await apiFetch("/api/products");
     const data = await res.json();
     if (!res.ok) {
       if (res.status === 401) {
@@ -78,7 +79,7 @@ export default function AdminProductsPage() {
       stock: Number(form.stock),
     };
 
-    const res = await fetch(
+    const res = await apiFetch(
       editingId ? `/api/products/${editingId}` : "/api/products",
       {
         method: editingId ? "PATCH" : "POST",
@@ -99,7 +100,7 @@ export default function AdminProductsPage() {
 
   async function remove(id: string) {
     setError(null);
-    const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+    const res = await apiFetch(`/api/products/${id}`, { method: "DELETE" });
     const data = await res.json();
     if (!res.ok) {
       setError(data.error ?? "Delete failed");

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import type { Product } from "@/lib/types";
+import { apiFetch } from "@/lib/api-client";
 import { Suspense } from "react";
 
 function ProductsContent() {
@@ -32,7 +33,7 @@ function ProductsContent() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/products?${queryString}`);
+        const res = await apiFetch(`/api/products?${queryString}`);
         const data = await res.json();
         if (!res.ok) {
           if (res.status === 401) {

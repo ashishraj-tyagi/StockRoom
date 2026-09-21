@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/types";
 import { formatMoney } from "@/lib/money";
+import { apiFetch } from "@/lib/api-client";
 
 type CartLine = {
   productId: string;
@@ -23,7 +24,7 @@ export default function CartPage() {
   async function load() {
     setLoading(true);
     setError(null);
-    const res = await fetch("/api/cart");
+    const res = await apiFetch("/api/cart");
     const data = await res.json();
     if (!res.ok) {
       if (res.status === 401) {
@@ -46,7 +47,7 @@ export default function CartPage() {
 
   async function updateQty(productId: string, quantity: number) {
     setError(null);
-    const res = await fetch("/api/cart", {
+    const res = await apiFetch("/api/cart", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ productId, quantity }),
@@ -62,7 +63,7 @@ export default function CartPage() {
   }
 
   async function clear() {
-    await fetch("/api/cart", { method: "DELETE" });
+    await apiFetch("/api/cart", { method: "DELETE" });
     await load();
     router.refresh();
   }

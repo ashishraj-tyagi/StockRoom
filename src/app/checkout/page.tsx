@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/types";
 import { formatMoney } from "@/lib/money";
+import { apiFetch } from "@/lib/api-client";
 
 type CartLine = {
   productId: string;
@@ -22,7 +23,7 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     async function load() {
-      const res = await fetch("/api/cart");
+      const res = await apiFetch("/api/cart");
       const data = await res.json();
       if (!res.ok) {
         if (res.status === 401) {
@@ -41,7 +42,7 @@ export default function CheckoutPage() {
   async function placeOrder() {
     setPlacing(true);
     setError(null);
-    const res = await fetch("/api/orders", { method: "POST" });
+    const res = await apiFetch("/api/orders", { method: "POST" });
     const data = await res.json();
     setPlacing(false);
     if (!res.ok) {

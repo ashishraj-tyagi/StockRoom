@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SEED_CREDENTIALS } from "@/lib/credentials";
+import { apiFetch } from "@/lib/api-client";
 import { Suspense } from "react";
 
 function LoginForm() {
@@ -19,7 +20,7 @@ function LoginForm() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/auth", {
+      const res = await apiFetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),

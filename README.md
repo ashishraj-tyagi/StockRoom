@@ -74,10 +74,13 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-## Hosting (free)
+## Hosting
 
-- **Vercel / similar**: works for demos; file persistence may be ephemeral — call `/api/test/reset` at suite start.
-- For durable local CI, run `npm run build && npm start` in the pipeline.
+**Live demo:** [https://ashishraj-tyagi.github.io/StockRoom/](https://ashishraj-tyagi.github.io/StockRoom/)
+
+GitHub Pages can only serve a static site, so the public demo runs the UI in the browser (catalog, cart, checkout, admin) with data stored in `localStorage`. REST APIs used by Playwright and Postman still require `npm run dev` or `npm start` locally.
+
+Each visitor gets their own seeded demo data in the browser. Use **Reset** by signing out and clearing site data, or call `POST /api/test/reset` against a local server.
 
 Optional env:
 

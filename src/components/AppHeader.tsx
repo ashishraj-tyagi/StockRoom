@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api-client";
 import type { PublicUser } from "@/lib/types";
 
 const links = [
@@ -22,7 +23,7 @@ export function AppHeader({
   const router = useRouter();
 
   async function logout() {
-    await fetch("/api/auth", { method: "DELETE" });
+    await apiFetch("/api/auth", { method: "DELETE" });
     router.push("/login");
     router.refresh();
   }

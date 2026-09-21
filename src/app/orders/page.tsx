@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Order } from "@/lib/types";
 import { formatMoney } from "@/lib/money";
+import { apiFetch } from "@/lib/api-client";
 
 function OrdersContent() {
   const router = useRouter();
@@ -15,7 +16,7 @@ function OrdersContent() {
 
   useEffect(() => {
     async function load() {
-      const res = await fetch("/api/orders");
+      const res = await apiFetch("/api/orders");
       const data = await res.json();
       if (!res.ok) {
         if (res.status === 401) {
