@@ -1,17 +1,15 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { SEED_CREDENTIALS } from "@/lib/credentials";
-import { apiFetch } from "@/lib/api-client";
-import { Suspense } from "react";
+import { apiFetch, isStaticHost } from "@/lib/api-client";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/products";
-  const [username, setUsername] = useState("standard");
-  const [password, setPassword] = useState("password123");
+  const [username, setUsername] = useState(isStaticHost ? "" : "standard");
+  const [password, setPassword] = useState(isStaticHost ? "" : "password123");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -44,7 +42,9 @@ function LoginForm() {
       <section className="login-panel" data-testid="login-panel">
         <h1 data-testid="login-heading">Sign in</h1>
         <p className="helper">
-          Use a seeded account to exercise auth, catalog, cart, and admin flows.
+          {isStaticHost
+            ? "Sign in to use the catalog, cart, and admin flows."
+            : "Use a seeded account from the README to exercise auth, catalog, cart, and admin flows."}
         </p>
 
         <form className="form-stack" onSubmit={onSubmit} data-testid="login-form">
@@ -87,32 +87,6 @@ function LoginForm() {
             {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
-
-        <div className="seed-box" data-testid="seed-credentials">
-          <strong>Seeded credentials</strong>
-          <table>
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Password</th>
-                <th>Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {SEED_CREDENTIALS.map((cred) => (
-                <tr key={cred.username} data-testid={`seed-row-${cred.username}`}>
-                  <td>
-                    <code>{cred.username}</code>
-                  </td>
-                  <td>
-                    <code>{cred.password}</code>
-                  </td>
-                  <td>{cred.notes}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </section>
     </div>
   );
