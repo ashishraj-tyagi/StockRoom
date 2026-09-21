@@ -1,8 +1,8 @@
 import {
-  clearSessionCookie,
+  SESSION_COOKIE,
   getSessionFromRequest,
   login,
-  setSessionCookie,
+  sessionCookieOptions,
   toPublicUser,
 } from "@/lib/auth";
 import { findUserById } from "@/lib/store";
@@ -21,8 +21,9 @@ export async function POST(request: Request) {
     if (!result.ok) {
       return jsonError(result.error, result.status);
     }
-    await setSessionCookie(result.token);
-    return jsonOk({ user: result.user, token: result.token });
+    const response = jsonOk({ user: result.user, token: result.token });
+    response.cookies.set(SESSION_COOKIE, result.token, sessionCookieOptions());
+    return response;
   } catch (error) {
     if (error instanceof z.ZodError) {
       return jsonError("Username and password are required", 400);
@@ -32,8 +33,12 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE() {
-  await clearSessionCookie();
-  return jsonOk({ ok: true });
+  const response = jsonOk({ ok: true });
+  response.cookies.set(SESSION_COOKIE, "", {
+    ...sessionCookieOptions(),
+    maxAge: 0,
+  });
+  return response;
 }
 
 export async function GET(request: Request) {

@@ -7,7 +7,8 @@ const PUBLIC = ["/login", "/api/health", "/api/auth", "/api/openapi", "/api/test
 
 function secretKey() {
   const secret =
-    process.env.STOCKROOM_SESSION_SECRET ?? "stockroom-dev-secret-change-me";
+    process.env.STOCKROOM_SESSION_SECRET?.trim() ||
+    "stockroom-dev-secret-change-me";
   return new TextEncoder().encode(secret);
 }
 

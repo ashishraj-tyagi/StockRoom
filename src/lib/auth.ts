@@ -9,7 +9,8 @@ const SESSION_TTL = "8h";
 
 function secretKey() {
   const secret =
-    process.env.STOCKROOM_SESSION_SECRET ?? "stockroom-dev-secret-change-me";
+    process.env.STOCKROOM_SESSION_SECRET?.trim() ||
+    "stockroom-dev-secret-change-me";
   return new TextEncoder().encode(secret);
 }
 
@@ -129,15 +130,19 @@ export class AuthError extends Error {
   }
 }
 
-export async function setSessionCookie(token: string) {
-  const jar = await cookies();
-  jar.set(SESSION_COOKIE, token, {
+export function sessionCookieOptions() {
+  return {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "lax" as const,
     path: "/",
     secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60 * 8,
-  });
+  };
+}
+
+export async function setSessionCookie(token: string) {
+  const jar = await cookies();
+  jar.set(SESSION_COOKIE, token, sessionCookieOptions());
 }
 
 export async function clearSessionCookie() {
