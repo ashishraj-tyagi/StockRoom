@@ -74,13 +74,49 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
+Against the protected Vercel AUT (requires `VERCEL_AUTOMATION_BYPASS_SECRET` in `.env`):
+
+```bash
+npm run test:e2e:vercel
+```
+
 ## Hosting
 
-**Live demo:** [https://ashishraj-tyagi.github.io/StockRoom/](https://ashishraj-tyagi.github.io/StockRoom/)
+**Static UI demo:** [https://ashishraj-tyagi.github.io/StockRoom/](https://ashishraj-tyagi.github.io/StockRoom/) (GitHub Pages, no REST APIs)
 
-GitHub Pages can only serve a static site, so the public demo runs the UI in the browser (catalog, cart, checkout, admin) with data stored in `localStorage`. REST APIs used by Playwright and Postman still require `npm run dev` or `npm start` locally.
+**Dynamic AUT:** [https://stock-room-ashishraj-tyagi.vercel.app](https://stock-room-ashishraj-tyagi.vercel.app)
 
-Each visitor gets their own seeded demo data in the browser. Use **Reset** by signing out and clearing site data, or call `POST /api/test/reset` against a local server.
+The Vercel app is behind **Vercel Authentication** so browsers without a team login cannot use it. Playwright, Postman, and RestAssured send `x-vercel-protection-bypass` with a project secret (Protection Bypass for Automation). Humans still sign in through Vercel; tools do not.
+
+1. In the Vercel project: **Settings → Deployment Protection**
+2. Keep **Require Log In** on
+3. Under **Protection Bypass for Automation**, add a secret and copy it
+4. Put it in a local `.env` (never commit the value):
+
+```
+PLAYWRIGHT_BASE_URL=https://stock-room-ashishraj-tyagi.vercel.app
+VERCEL_AUTOMATION_BYPASS_SECRET=your-secret
+```
+
+### curl / RestAssured / Postman
+
+```bash
+curl -s https://stock-room-ashishraj-tyagi.vercel.app/api/health \
+  -H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET"
+```
+
+Postman: import `postman/StockRoom.postman_collection.json`, set `baseUrl` to the Vercel origin and `vercelBypassSecret` to the same value. A collection pre-request script adds the header when that variable is set.
+
+RestAssured: send the same header from a request spec when the env var is set:
+
+```java
+String bypass = System.getenv("VERCEL_AUTOMATION_BYPASS_SECRET");
+if (bypass != null && !bypass.isBlank()) {
+    RestAssured.given()
+        .header("x-vercel-protection-bypass", bypass)
+        .get("/api/health");
+}
+```
 
 Optional env:
 

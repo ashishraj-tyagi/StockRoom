@@ -2,9 +2,26 @@
   "info": {
     "_postman_id": "stockroom-api-collection",
     "name": "StockRoom API",
-    "description": "Sample collection for API automation against StockRoom",
+    "description": "Sample collection for API automation against StockRoom. Against the protected Vercel deploy, set collection variable vercelBypassSecret (do not commit the real value).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const secret = pm.collectionVariables.get('vercelBypassSecret');",
+          "if (secret) {",
+          "  pm.request.headers.upsert({",
+          "    key: 'x-vercel-protection-bypass',",
+          "    value: secret",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
   "item": [
     {
       "name": "Reset store",
@@ -62,6 +79,7 @@
   ],
   "variable": [
     { "key": "baseUrl", "value": "http://127.0.0.1:43124" },
-    { "key": "token", "value": "" }
+    { "key": "token", "value": "" },
+    { "key": "vercelBypassSecret", "value": "" }
   ]
 }
